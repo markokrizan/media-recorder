@@ -1,0 +1,9 @@
+export const DEVICE_TYPE_WEB_CAM = "videoinput";
+export const DEVICE_TYPE_MICROPHONE = "audioinput";
+export const VIDEO_MAX_SIZE = 100;
+export const DEFAULT_VIDEO_FORMAT = "video/webm";
+export const DEFAULT_VIDEO_EXTENSION = ".webm";
+export const EVENT_ADD_DEVICE = "add_device";
+export const EVENT_REMOVE_DEVICE = "remove_device";
+export const ERROR_CODE_PERMISSION_DENIED = "permission_denied";
+export const ERROR_CODE_DEVICE_NOT_FOUND = "device_not_found";
