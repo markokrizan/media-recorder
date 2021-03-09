@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import useSyncState from "./useSyncState";
 import { EVENT_REMOVE_DEVICE } from "../core/consts";
-import { WebcamDriver } from "../core/WebcamDriver";
+import { WebcamDriver } from "../core/MediaDriver";
 
 let camDriver = null;
 

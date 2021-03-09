@@ -1,4 +1,4 @@
-import { bytesToMB } from "utils";
+import { bytesToMB } from "./utils";
 
 export class CustomMediaRecorder extends MediaRecorder {
   constructor(

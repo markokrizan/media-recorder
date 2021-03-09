@@ -1,3 +1,5 @@
+import { useMediaDevice } from "media-recorder/react";
+
 import "./App.css";
 
 function App() {

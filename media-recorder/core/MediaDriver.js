@@ -126,9 +126,9 @@ export class MediaDriver {
     this.onResetVideoData();
   }
 
-  stopStream = () => {
+  stopStream() {
     this.stream?.getTracks?.().forEach((track) => track.stop());
-  };
+  }
 
   async loadDevices(deviceKind) {
     const devices = await navigator.mediaDevices.enumerateDevices();
