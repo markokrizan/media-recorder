@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import useSyncState from "./useSyncState";
 import { EVENT_REMOVE_DEVICE } from "../core/consts";
-import { WebcamDriver } from "../core/MediaDriver";
+import { MediaDriver } from "../core/MediaDriver";
 
 let camDriver = null;
 
@@ -108,7 +108,7 @@ export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
   };
 
   useEffect(() => {
-    camDriver = new WebcamDriver(
+    camDriver = new MediaDriver(
       videoElement,
       maxVideoMessageSize,
       onStop,

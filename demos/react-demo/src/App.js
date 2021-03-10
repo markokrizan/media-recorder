@@ -1,4 +1,4 @@
-import { useMediaDevice } from "media-recorder/react";
+import { useMediaDevice } from "media-recorder/dist/react";
 
 import "./App.css";
 
