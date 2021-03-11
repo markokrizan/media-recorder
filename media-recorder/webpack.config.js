@@ -1,5 +1,5 @@
 const path = require("path");
-
+// Possibly use to compile all 3 versions
 module.exports = {
   module: {
     rules: [
@@ -17,6 +17,6 @@ module.exports = {
     filename: "[name].js",
   },
   externals: {
-    'react': 'commonjs react',
-  }
+    react: "commonjs react",
+  },
 };
