@@ -16,4 +16,7 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     filename: "[name].js",
   },
+  externals: {
+    'react': 'commonjs react',
+  }
 };
