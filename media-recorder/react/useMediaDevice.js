@@ -161,10 +161,10 @@ export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
     return await camDriver?.changeDevice?.(deviceId);
   };
 
-  const retake = async () => {
+  const retake = async (deviceId) => {
     await setPlaybackAvailable(false);
 
-    return await camDriver.retake();
+    return await camDriver.retake(deviceId || selectedDevice);
   };
 
   const clearRecording = async () => {

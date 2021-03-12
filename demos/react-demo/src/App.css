@@ -9,3 +9,7 @@
   flex-direction: column;
   width: 20%;
 }
+
+.video {
+  border: 1px solid black;
+}

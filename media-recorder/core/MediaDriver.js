@@ -271,9 +271,9 @@ export class MediaDriver {
     await this.showWebcamPreview(deviceId);
   }
 
-  async retake() {
+  async retake(deviceId) {
     await this.resetVideoData();
-    await this.showWebcamPreview();
+    await this.showWebcamPreview(deviceId);
     await this.startRecording();
   }
 

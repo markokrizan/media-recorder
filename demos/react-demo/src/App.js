@@ -34,7 +34,7 @@ function App() {
   return (
     <div className="App">
       <p>Video demo:</p>
-      <video ref={videoElementRef} autoPlay={true} />
+      <video ref={videoElementRef} autoPlay={true} className="video" />
       <div className="video-controls-container ">
         {!isPreviewing && (
           <button onClick={showWebcamPreview}>Show webcam preview</button>
@@ -61,7 +61,12 @@ function App() {
         {isRecording && <button onClick={stopRecording}>Stop recording</button>}
         {playbackAvailable && (
           <>
-            {!isPlaying && <button onClick={playVideo}>Play video</button>}
+            {!isPlaying && (
+              <>
+                <button onClick={playVideo}>Play video</button>
+                <button onClick={() => retake()}>Retake</button>
+              </>
+            )}
             {isPlaying && <button onClick={pauseVideo}>Pause video</button>}
             <span>
               Playback duration: {playingVideoProgress?.seconds} (
