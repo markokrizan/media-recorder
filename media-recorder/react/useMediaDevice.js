@@ -3,25 +3,9 @@ import { useEffect, useState } from "react";
 import useSyncState from "./useSyncState";
 import { EVENT_REMOVE_DEVICE } from "../core/consts";
 import { MediaDriver } from "../core/MediaDriver";
-import { getSecondsAsTimeString } from "../core/utils";
+import { getSecondsAsTimeString, mapPluggedOutDevice } from "../core/utils";
 
 let camDriver = null;
-
-const mapPluggedOutDevice = (devices, pluggedOutDevice) => {
-  return [...devices].map((device) => {
-    if (device.deviceId === pluggedOutDevice.deviceId) {
-      return {
-        deviceId: device.deviceId,
-        groupId: device.groupId,
-        kind: device.kind,
-        label: device.label,
-        isPluggedOut: true,
-      };
-    }
-
-    return device;
-  });
-};
 
 export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
   const [isPreviewing, setIsPreviewing] = useSyncState(false);
@@ -44,7 +28,10 @@ export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
   };
 
   const onVideoRecordTick = async (currentVideoTimeElapsed) => {
-    await setRecordingDuration(getSecondsAsTimeString(currentVideoTimeElapsed));
+    await setRecordingDuration({
+      seconds: currentVideoTimeElapsed,
+      defaultRepresentation: getSecondsAsTimeString(currentVideoTimeElapsed),
+    });
   };
 
   const onStartRecording = async () => {
@@ -79,13 +66,15 @@ export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
     setPlayingVideoProgress({
       progressPercentage,
       timeElapsed,
+      defaultRepresentation: getSecondsAsTimeString(timeElapsed),
     });
   };
 
   const onPlaybackFinished = async ({ progressPercentage }) => {
     setPlayingVideoProgress({
       progressPercentage,
-      currentPlayingVideoTimeElapsed: 0,
+      timeElapsed: 0,
+      defaultRepresentation: getSecondsAsTimeString(0),
     });
 
     await setIsPaused(false);

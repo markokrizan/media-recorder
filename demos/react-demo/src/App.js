@@ -37,11 +37,29 @@ function App() {
     <div className="App">
       <p>Video demo:</p>
       <video ref={videoElementRef} autoPlay={true} />
-      <div>
-        <button onClick={showWebcamPreview}>show webcam preview</button>
-        <button onClick={startRecording}>start recording</button>
-        <span>Recording duration: {recordingDuration}</span>
-        <button onClick={stopRecording}>stopRecording</button>
+      <div className="video-controls-container ">
+        <button onClick={showWebcamPreview}>Show webcam preview</button>
+        {!isRecording && (
+          <button onClick={startRecording}>Start recording</button>
+        )}
+        {isRecording && (
+          <span>
+            Recording duration: {recordingDuration?.seconds} (
+            {recordingDuration?.defaultRepresentation})
+          </span>
+        )}
+        {isRecording && <button onClick={stopRecording}>Stop recording</button>}
+        {playbackAvailable && (
+          <>
+            {!isPlaying && <button onClick={playVideo}>Play video</button>}
+            {isPlaying && <button onClick={pauseVideo}>Pause video</button>}
+            <span>
+              Playback duration: {playingVideoProgress?.seconds} (
+              {playingVideoProgress?.defaultRepresentation}) (
+              {playingVideoProgress?.progressPercentage} %)
+            </span>
+          </>
+        )}
       </div>
     </div>
   );

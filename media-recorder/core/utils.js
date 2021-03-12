@@ -47,3 +47,16 @@ export const getSecondsAsTimeString = (seconds) => {
 
   return date.toISOString().substring(startIndex, endIndex);
 };
+
+export const mapPluggedOutDevice = (devices, pluggedOutDevice) => {
+  return [...devices].map((device) => {
+    if (device.deviceId === pluggedOutDevice.deviceId) {
+      return {
+        ...device,
+        isPluggedOut: true,
+      };
+    }
+
+    return device;
+  });
+};
