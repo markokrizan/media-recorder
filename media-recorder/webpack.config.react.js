@@ -5,12 +5,10 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: ["@babel/env", "@babel/react"],
-            plugins: ["@babel/plugin-proposal-class-properties"],
-          },
+        loader: "babel-loader",
+        options: {
+          presets: ["@babel/env", "@babel/react"],
+          plugins: ["@babel/plugin-proposal-class-properties"],
         },
       },
     ],
@@ -19,6 +17,8 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "react.js",
+    library: "media-recorder-react",
+    libraryTarget: "commonjs2",
   },
   externals: {
     react: "commonjs2 react",
