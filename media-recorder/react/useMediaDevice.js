@@ -173,6 +173,10 @@ export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
     return await camDriver.clearRecording();
   };
 
+  const download = () => {
+    return camDriver.download();
+  };
+
   return {
     showWebcamPreview,
     isPreviewing,
@@ -194,5 +198,6 @@ export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
     retake,
     clearRecording,
     showVideoFile,
+    download,
   };
 };

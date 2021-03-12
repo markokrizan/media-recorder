@@ -1,5 +1,9 @@
 import { CustomMediaRecorder } from "./MediaRecorder";
-import { getVideoBlobDuration, differenceBy } from "./utils";
+import {
+  getVideoBlobDuration,
+  differenceBy,
+  generateRandomString,
+} from "./utils";
 import {
   DEFAULT_VIDEO_FORMAT,
   DEVICE_TYPE_WEB_CAM,
@@ -8,6 +12,7 @@ import {
   EVENT_REMOVE_DEVICE,
   ERROR_CODE_PERMISSION_DENIED,
   ERROR_CODE_DEVICE_NOT_FOUND,
+  DEFAULT_VIDEO_EXTENSION,
 } from "./consts";
 
 const _PERMISSION_ERROR = "Permission denied";
@@ -31,6 +36,8 @@ export class MediaDriver {
         "Provide a reference to a HTMLMediaElement (ex. <video /> or <audio/>) in order to use the API!"
       );
     }
+
+    this.extension = DEFAULT_VIDEO_EXTENSION;
 
     this.mediaElement = mediaElement;
     this.stream = null;
@@ -78,6 +85,7 @@ export class MediaDriver {
   async showVideo(videoFile) {
     const duration = await getVideoBlobDuration(videoFile);
 
+    this.currentRecordedVideo.video = videoFile;
     this.currentRecordedVideo.duration = Math.round(duration);
     this.mediaElement.ontimeupdate = this.handlePlayingVideoFrame.bind(this);
 
@@ -280,6 +288,20 @@ export class MediaDriver {
   async clearRecording() {
     await this.resetVideoData();
     await this.showWebcamPreview();
+  }
+
+  download() {
+    const url = URL.createObjectURL(this.getRecordedVideo());
+    const donwloadLink = document.createElement("a");
+    const fileName = generateRandomString() + this.extension;
+
+    document.body.appendChild(donwloadLink);
+    donwloadLink.style = "display: none";
+    donwloadLink.href = url;
+    donwloadLink.download = fileName;
+    donwloadLink.click();
+
+    window.URL.revokeObjectURL(url);
   }
 
   clear() {

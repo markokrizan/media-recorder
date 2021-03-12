@@ -26,9 +26,9 @@ function App() {
     isPlaying,
     changeDevice,
     retake,
-    getRecordedVideo,
     clearRecording,
     showVideoFile,
+    download,
   } = mediaRecorderReact.useMediaDevice(videoElement);
 
   return (
@@ -37,7 +37,14 @@ function App() {
       <video ref={videoElementRef} autoPlay={true} className="video" />
       <div className="video-controls-container ">
         {!isPreviewing && (
-          <button onClick={showWebcamPreview}>Show webcam preview</button>
+          <>
+            <button onClick={showWebcamPreview}>Show webcam preview</button>
+            Load video file:
+            <input
+              type="file"
+              onChange={(e) => showVideoFile(e.target.files[0])}
+            />
+          </>
         )}
         {!isRecording && isPreviewing && !playbackAvailable && (
           <>
@@ -65,6 +72,8 @@ function App() {
               <>
                 <button onClick={playVideo}>Play video</button>
                 <button onClick={() => retake()}>Retake</button>
+                <button onClick={download}>Download</button>
+                <button onClick={clearRecording}>Clear recording</button>
               </>
             )}
             {isPlaying && <button onClick={pauseVideo}>Pause video</button>}
