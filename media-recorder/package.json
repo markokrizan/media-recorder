@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "yarn build-react",
     "build-react": "webpack-cli build --config webpack.config.react.js --mode production"
   },
   "author": "",
