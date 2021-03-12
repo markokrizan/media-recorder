@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import useSyncState from "./useSyncState";
 import { EVENT_REMOVE_DEVICE } from "../core/consts";
 import { MediaDriver } from "../core/MediaDriver";
+import { getSecondsAsTimeString } from "../core/utils";
 
 let camDriver = null;
 
@@ -42,12 +43,8 @@ export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
     console.error("Recording error: ", e);
   };
 
-  const onPreviewError = async () => {
-    await setIsPreviewing(false);
-  };
-
   const onVideoRecordTick = async (currentVideoTimeElapsed) => {
-    await setRecordingDuration(currentVideoTimeElapsed);
+    await setRecordingDuration(getSecondsAsTimeString(currentVideoTimeElapsed));
   };
 
   const onStartRecording = async () => {
@@ -108,36 +105,37 @@ export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
   };
 
   useEffect(() => {
-    camDriver = new MediaDriver(
-      videoElement,
-      maxVideoMessageSize,
-      onStop,
-      onRecordingError,
-      onPreviewError,
-      onVideoRecordTick,
-      onStartRecording,
-      onResetVideoData,
-      onPlayVideoFrame,
-      onPlaybackFinished,
-      onDeviceChange
-    );
+    if (videoElement) {
+      camDriver = new MediaDriver(
+        videoElement,
+        maxVideoMessageSize,
+        onStop,
+        onRecordingError,
+        onVideoRecordTick,
+        onStartRecording,
+        onResetVideoData,
+        onPlayVideoFrame,
+        onPlaybackFinished,
+        onDeviceChange
+      );
 
-    const initDevices = async () => {
-      const devices = await camDriver.loadDevices();
+      const initDevices = async () => {
+        const devices = await camDriver.loadDevices();
 
-      if (devices.length) {
-        camDriver.setDevices(devices);
-        await setDevices(devices);
-        await setSelectedDevice(devices[0].deviceId);
-      }
-    };
+        if (devices.length) {
+          camDriver.setDevices(devices);
+          await setDevices(devices);
+          await setSelectedDevice(devices[0].deviceId);
+        }
+      };
 
-    initDevices();
+      initDevices();
+    }
 
     return () => {
       camDriver && camDriver.clear();
     };
-  }, []);
+  }, [videoElement]);
 
   const startRecording = async () => {
     return camDriver.startRecording();

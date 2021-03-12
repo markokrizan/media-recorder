@@ -34,3 +34,16 @@ export const getVideoBlobDuration = async (blob) => {
 
   return durationPromise;
 };
+
+export const getSecondsAsTimeString = (seconds) => {
+  if (!Number.isInteger(seconds)) {
+    return;
+  }
+
+  const date = new Date(0, 0, 0, 0, 0, seconds);
+
+  const startIndex = date.getHours() >= 1 ? 11 : 14;
+  const endIndex = 19;
+
+  return date.toISOString().substring(startIndex, endIndex);
+};

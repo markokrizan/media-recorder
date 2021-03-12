@@ -17,7 +17,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "react.js",
-    library: "media-recorder-react",
+    library: "mediaRecorderReact",
     libraryTarget: "commonjs2",
   },
   externals: {
