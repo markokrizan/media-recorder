@@ -109,7 +109,7 @@ export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
       );
 
       const initDevices = async () => {
-        const devices = await camDriver.loadDevices();
+        const devices = await camDriver.loadWebcams();
 
         if (devices.length) {
           camDriver.setDevices(devices);
@@ -155,8 +155,10 @@ export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
     return camDriver.getRecordedVideo();
   };
 
-  const changeDevice = async () => {
-    return await camDriver.changeDevice(selectedDevice);
+  const changeDevice = async (deviceId) => {
+    await setSelectedDevice(deviceId);
+
+    return await camDriver?.changeDevice?.(deviceId);
   };
 
   const retake = async () => {

@@ -164,14 +164,14 @@ export class MediaDriver {
   }
 
   async getVideoDeviceStream(deviceId) {
-    return await _getDeviceStream({
+    return await this._getDeviceStream({
       video: { deviceId },
       audio: true,
     });
   }
 
   async getAudioDeviceStream(deviceId) {
-    return await _getDeviceStream({
+    return await this._getDeviceStream({
       video: false,
       audio: { deviceId },
     });
@@ -268,18 +268,18 @@ export class MediaDriver {
     this.stopStream();
 
     await this.resetVideoData();
-    await this.showPreview(deviceId);
+    await this.showWebcamPreview(deviceId);
   }
 
   async retake() {
     await this.resetVideoData();
-    await this.showPreview();
+    await this.showWebcamPreview();
     await this.startRecording();
   }
 
   async clearRecording() {
     await this.resetVideoData();
-    await this.showPreview();
+    await this.showWebcamPreview();
   }
 
   clear() {

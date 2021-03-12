@@ -15,7 +15,6 @@ function App() {
     isPreviewing,
     devices,
     selectedDevice,
-    setSelectedDevice,
     startRecording,
     stopRecording,
     playVideo,
@@ -24,7 +23,6 @@ function App() {
     playingVideoProgress,
     playbackAvailable,
     pauseVideo,
-    isPaused,
     isPlaying,
     changeDevice,
     retake,
@@ -38,9 +36,21 @@ function App() {
       <p>Video demo:</p>
       <video ref={videoElementRef} autoPlay={true} />
       <div className="video-controls-container ">
-        <button onClick={showWebcamPreview}>Show webcam preview</button>
-        {!isRecording && (
-          <button onClick={startRecording}>Start recording</button>
+        {!isPreviewing && (
+          <button onClick={showWebcamPreview}>Show webcam preview</button>
+        )}
+        {!isRecording && isPreviewing && !playbackAvailable && (
+          <>
+            <select
+              value={selectedDevice?.deviceId || null}
+              onChange={(e) => changeDevice(e.target.value)}
+            >
+              {devices.map((device) => (
+                <option value={device.deviceId}>{device.label}</option>
+              ))}
+            </select>
+            <button onClick={startRecording}>Start recording</button>
+          </>
         )}
         {isRecording && (
           <span>
