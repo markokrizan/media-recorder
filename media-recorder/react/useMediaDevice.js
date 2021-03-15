@@ -101,6 +101,12 @@ export const useMediaDevice = (mediaElement, maxRecordedFileSize = 100) => {
   };
 
   useEffect(() => {
+    return () => {
+      camDriver.current && camDriver.current.clear();
+    };
+  }, []);
+
+  useEffect(() => {
     if (mediaElement) {
       camDriver.current = new MediaDriver(
         mediaElement,
@@ -116,10 +122,6 @@ export const useMediaDevice = (mediaElement, maxRecordedFileSize = 100) => {
         onDeviceLoad
       );
     }
-
-    return () => {
-      camDriver.current && camDriver.current.clear();
-    };
   }, [mediaElement]);
 
   const startRecording = async () => {
