@@ -26,7 +26,7 @@ const DEFAULT_EXTENSIONS = {
   [TAG_NAME_AUDIO]: DEFAULT_AUDIO_EXTENSION,
 };
 
-export class MediaDriver {
+class MediaDriver {
   constructor(
     mediaElement,
     maxMediaSize = 5,
@@ -68,37 +68,6 @@ export class MediaDriver {
   init() {
     navigator.mediaDevices.ondevicechange = this.handleDeviceChange.bind(this);
     this.loadDevices();
-  }
-
-  async loadStream(deviceId) {
-    try {
-      this.clear();
-
-      const elementType = this._getElementType();
-
-      if (elementType === TAG_NAME_VIDEO) {
-        this.stream = await this.getVideoDeviceStream(deviceId);
-      } else if (elementType === TAG_NAME_AUDIO) {
-        this.stream = await this.getAudioDeviceStream(deviceId);
-      } else {
-        throw new Error(
-          "Provided element is not a descendant of HTMLMediaElement"
-        );
-      }
-
-      this.mediaElement.setAttribute("autoplay", true);
-      this.mediaElement.srcObject = this.stream;
-    } catch (e) {
-      if (e.message === _PERMISSION_ERROR) {
-        throw { code: ERROR_CODE_PERMISSION_DENIED };
-      }
-
-      if (e.message === _DEVICE_NOT_FOUND_ERROR) {
-        throw { code: ERROR_CODE_DEVICE_NOT_FOUND };
-      }
-
-      throw e;
-    }
   }
 
   async showMediaFile(mediaFile) {
@@ -157,23 +126,7 @@ export class MediaDriver {
     this.stream?.getTracks?.().forEach((track) => track.stop());
   }
 
-  async loadDevices() {
-    const elementType = this._getElementType();
-
-    if (elementType === TAG_NAME_VIDEO) {
-      this.devices = await this._loadDevices(DEVICE_TYPE_WEB_CAM);
-    } else if (elementType === TAG_NAME_AUDIO) {
-      this.devices = await this._loadDevices(DEVICE_TYPE_MICROPHONE);
-    } else {
-      throw new Error(
-        "Provided element is not a descendant of HTMLMediaElement"
-      );
-    }
-
-    this.onDeviceLoad && this.onDeviceLoad(this.devices);
-  }
-
-  async _loadDevices(deviceKind) {
+  async loadDevices(deviceKind) {
     const devices = await navigator.mediaDevices.enumerateDevices();
 
     return devices.filter((device) => device.kind === deviceKind);
@@ -187,40 +140,8 @@ export class MediaDriver {
     this.devices = devices;
   }
 
-  _getElementType() {
-    return this.mediaElement.tagName;
-  }
-
-  async _getDeviceStream(constraint) {
+  async getDeviceStream(constraint) {
     return await navigator.mediaDevices.getUserMedia(constraint);
-  }
-
-  async getVideoDeviceStream(deviceId) {
-    if (deviceId) {
-      return await this._getDeviceStream({
-        video: { deviceId },
-        audio: true,
-      });
-    }
-
-    return await this._getDeviceStream({
-      video: true,
-      audio: true,
-    });
-  }
-
-  async getAudioDeviceStream(deviceId) {
-    if (deviceId) {
-      return await this._getDeviceStream({
-        video: false,
-        audio: { deviceId },
-      });
-    }
-
-    return await this._getDeviceStream({
-      video: false,
-      audio: true,
-    });
   }
 
   async showRecordedMediaPreview() {
@@ -330,7 +251,7 @@ export class MediaDriver {
     const url = URL.createObjectURL(this.getRecordedMedia());
     const downloadLink = document.createElement("a");
     const fileName =
-      generateRandomString() + DEFAULT_EXTENSIONS[this._getElementType()];
+      generateRandomString() + DEFAULT_EXTENSIONS[this.mediaElement.tagName];
 
     document.body.appendChild(downloadLink);
     downloadLink.style = "display: none";
@@ -353,5 +274,114 @@ export class MediaDriver {
     }
 
     this.mediaRecorder && this.mediaRecorder.clear();
+  }
+}
+
+class VideoDriver extends MediaDriver {
+  constructor(...params) {
+    super(...params);
+  }
+
+  async loadStream(deviceId) {
+    try {
+      this.clear();
+
+      this.stream = await this.getVideoDeviceStream(deviceId);
+
+      this.mediaElement.setAttribute("autoplay", true);
+      this.mediaElement.srcObject = this.stream;
+    } catch (e) {
+      if (e.message === _PERMISSION_ERROR) {
+        throw { code: ERROR_CODE_PERMISSION_DENIED };
+      }
+
+      if (e.message === _DEVICE_NOT_FOUND_ERROR) {
+        throw { code: ERROR_CODE_DEVICE_NOT_FOUND };
+      }
+
+      throw e;
+    }
+  }
+
+  async getVideoDeviceStream(deviceId) {
+    if (deviceId) {
+      return await this.getDeviceStream({
+        video: { deviceId },
+        audio: true,
+      });
+    }
+
+    return await this.getDeviceStream({
+      video: true,
+      audio: true,
+    });
+  }
+
+  async loadDevices() {
+    this.devices = await super.loadDevices(DEVICE_TYPE_WEB_CAM);
+
+    this.onDeviceLoad?.(this.devices);
+  }
+}
+
+class AudioDriver extends MediaDriver {
+  constructor(...params) {
+    super(...params);
+  }
+
+  async loadStream(deviceId) {
+    try {
+      this.clear();
+
+      this.stream = await this.getAudioDeviceStream(deviceId);
+
+      this.mediaElement.setAttribute("autoplay", true);
+      this.mediaElement.srcObject = this.stream;
+    } catch (e) {
+      if (e.message === _PERMISSION_ERROR) {
+        throw { code: ERROR_CODE_PERMISSION_DENIED };
+      }
+
+      if (e.message === _DEVICE_NOT_FOUND_ERROR) {
+        throw { code: ERROR_CODE_DEVICE_NOT_FOUND };
+      }
+
+      throw e;
+    }
+  }
+
+  async getAudioDeviceStream(deviceId) {
+    if (deviceId) {
+      return await this.getDeviceStream({
+        video: false,
+        audio: { deviceId },
+      });
+    }
+
+    return await this.getDeviceStream({
+      video: false,
+      audio: true,
+    });
+  }
+
+  async loadDevices() {
+    this.devices = await super.loadDevices(DEVICE_TYPE_MICROPHONE);
+
+    this.onDeviceLoad?.(this.devices);
+  }
+}
+
+export class MediaDriverFactory {
+  static create(mediaElement, ...rest) {
+    const elementType = mediaElement.tagName;
+
+    switch (elementType) {
+      case TAG_NAME_VIDEO:
+        return new VideoDriver(mediaElement, ...rest);
+      case TAG_NAME_AUDIO:
+        return new AudioDriver(mediaElement, ...rest);
+      default:
+        return null;
+    }
   }
 }

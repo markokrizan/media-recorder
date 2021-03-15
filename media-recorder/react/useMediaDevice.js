@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 
 import useSyncState from "./useSyncState";
 import { EVENT_REMOVE_DEVICE } from "../core/consts";
-import { MediaDriver } from "../core/MediaDriver";
+import { MediaDriverFactory } from "../core/MediaDriver";
 import { getSecondsAsTimeString, mapPluggedOutDevice } from "../core/utils";
 
 export const useMediaDevice = (mediaElement, maxRecordedFileSize = 100) => {
@@ -108,7 +108,7 @@ export const useMediaDevice = (mediaElement, maxRecordedFileSize = 100) => {
 
   useEffect(() => {
     if (mediaElement) {
-      camDriver.current = new MediaDriver(
+      camDriver.current = MediaDriverFactory.create(
         mediaElement,
         maxRecordedFileSize,
         onStop,
