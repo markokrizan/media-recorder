@@ -6,7 +6,7 @@ export const differenceBy = (array1, array2, key) => {
   return array1.filter((a) => !array2.some((b) => b[key] === a[key]));
 };
 
-export const getVideoBlobDuration = async (blob) => {
+export const getMediaBlobDuration = async (blob) => {
   const tempVideoEl = document.createElement("video");
 
   const durationPromise = new Promise((resolve) =>

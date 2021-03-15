@@ -1,6 +1,6 @@
 import { CustomMediaRecorder } from "./MediaRecorder";
 import {
-  getVideoBlobDuration,
+  getMediaBlobDuration,
   differenceBy,
   generateRandomString,
 } from "./utils";
@@ -34,8 +34,8 @@ export class MediaDriver {
     onRecordingError = () => {},
     onMediaRecordTick = () => {},
     onStartRecording = () => {},
-    onResetVideoData = () => {},
-    onPlayVideoFrame = () => {},
+    onResetMediaData = () => {},
+    onPlayMediaFrame = () => {},
     onPlaybackFinished = () => {},
     onDeviceChange = () => {},
     onDeviceLoad = () => {}
@@ -49,15 +49,15 @@ export class MediaDriver {
     this.mediaElement = mediaElement;
     this.stream = null;
     this.mediaRecorder = null;
-    this.currentRecordedVideo = {};
+    this.currentRecordedMedia = {};
     this.devices = [];
     this.maxMediaSize = maxMediaSize;
     this.onStop = onStop;
     this.onRecordingError = onRecordingError;
     this.onMediaRecordTick = onMediaRecordTick;
     this.onStartRecording = onStartRecording;
-    this.onResetVideoData = onResetVideoData;
-    this.onPlayVideoFrame = onPlayVideoFrame;
+    this.onResetMediaData = onResetMediaData;
+    this.onPlayMediaFrame = onPlayMediaFrame;
     this.onPlaybackFinished = onPlaybackFinished;
     this.onDeviceChange = onDeviceChange;
     this.onDeviceLoad = onDeviceLoad;
@@ -101,22 +101,22 @@ export class MediaDriver {
     }
   }
 
-  async showVideo(videoFile) {
-    const duration = await getVideoBlobDuration(videoFile);
+  async showMediaFile(mediaFile) {
+    const duration = await getMediaBlobDuration(mediaFile);
 
-    this.currentRecordedVideo.video = videoFile;
-    this.currentRecordedVideo.duration = Math.round(duration);
-    this.mediaElement.ontimeupdate = this.handlePlayingVideoFrame.bind(this);
+    this.currentRecordedMedia.file = mediaFile;
+    this.currentRecordedMedia.duration = Math.round(duration);
+    this.mediaElement.ontimeupdate = this.handlePlayingMediaFrame.bind(this);
 
     this.mediaElement.removeAttribute("autoplay");
 
-    if (typeof videoFile === "object") {
-      this.mediaElement.src = URL.createObjectURL(videoFile);
+    if (typeof mediaFile === "object") {
+      this.mediaElement.src = URL.createObjectURL(mediaFile);
 
       return;
     }
 
-    this.mediaElement.src = videoFile;
+    this.mediaElement.src = mediaFile;
   }
 
   async startRecording() {
@@ -136,21 +136,21 @@ export class MediaDriver {
   async stopRecording() {
     this.stopStream();
 
-    this.mediaElement.ontimeupdate = this.handlePlayingVideoFrame.bind(this);
+    this.mediaElement.ontimeupdate = this.handlePlayingMediaFrame.bind(this);
 
-    await this.showRecordedVideoPreview();
+    await this.showRecordedMediaPreview();
   }
 
-  async resetVideoData() {
+  async resetMediaData() {
     this.mediaElement?.removeAttribute?.("src");
     if (this.mediaElement?.ontimeupdate) {
       this.mediaElement.ontimeupdate = null;
     }
 
-    this.mediaRecorder && this.mediaRecorder.resetVideo();
-    this.currentRecordedVideo = {};
+    this.mediaRecorder && this.mediaRecorder.resetRecordedMedia();
+    this.currentRecordedMedia = {};
 
-    this.onResetVideoData();
+    this.onResetMediaData();
   }
 
   stopStream() {
@@ -223,25 +223,23 @@ export class MediaDriver {
     });
   }
 
-  async showRecordedVideoPreview() {
+  async showRecordedMediaPreview() {
     this.mediaElement.removeAttribute("autoplay");
 
-    const videoData = new Blob(this.mediaRecorder.getVideo(), {
+    const mediaData = new Blob(this.mediaRecorder.getRecordedMedia(), {
       type: DEFAULT_VIDEO_FORMAT,
     });
 
-    this.currentRecordedVideo = {
-      video: videoData,
-      duration: Math.round(await getVideoBlobDuration(videoData)),
+    this.currentRecordedMedia = {
+      file: mediaData,
+      duration: Math.round(await getMediaBlobDuration(mediaData)),
     };
 
     this.mediaElement.srcObject = null;
-    this.mediaElement.src = URL.createObjectURL(
-      this.currentRecordedVideo.video
-    );
+    this.mediaElement.src = URL.createObjectURL(this.currentRecordedMedia.file);
   }
 
-  handlePlayingVideoFrame() {
+  handlePlayingMediaFrame() {
     if (!this.mediaElement) {
       return;
     }
@@ -249,15 +247,15 @@ export class MediaDriver {
     const timeElapsed = Math.round(this.mediaElement.currentTime);
 
     const progressPercentage = Math.floor(
-      (timeElapsed / this.currentRecordedVideo.duration) * 100
+      (timeElapsed / this.currentRecordedMedia.duration) * 100
     );
 
-    this.onPlayVideoFrame({
+    this.onPlayMediaFrame({
       progressPercentage,
       timeElapsed,
     });
 
-    if (timeElapsed === this.currentRecordedVideo.duration) {
+    if (timeElapsed === this.currentRecordedMedia.duration) {
       this.onPlaybackFinished({ progressPercentage });
     }
   }
@@ -298,38 +296,38 @@ export class MediaDriver {
     this.devices = newDeviceList;
   }
 
-  playVideo() {
+  playMedia() {
     this.mediaElement?.play?.();
   }
 
-  pauseVideo() {
+  pauseMedia() {
     this.mediaElement?.pause?.();
   }
 
-  getRecordedVideo() {
-    return this.currentRecordedVideo.video;
+  getRecordedMedia() {
+    return this.currentRecordedMedia.file;
   }
 
   async changeDevice(deviceId) {
     this.stopStream();
 
-    await this.resetVideoData();
+    await this.resetMediaData();
     await this.loadStream(deviceId);
   }
 
   async retake(deviceId) {
-    await this.resetVideoData();
+    await this.resetMediaData();
     await this.loadStream(deviceId);
     await this.startRecording();
   }
 
   async clearRecording() {
-    await this.resetVideoData();
+    await this.resetMediaData();
     await this.loadStream();
   }
 
   download() {
-    const url = URL.createObjectURL(this.getRecordedVideo());
+    const url = URL.createObjectURL(this.getRecordedMedia());
     const downloadLink = document.createElement("a");
     const fileName =
       generateRandomString() + DEFAULT_EXTENSIONS[this._getElementType()];

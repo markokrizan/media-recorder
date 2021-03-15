@@ -16,12 +16,12 @@ function AudioDemo() {
     selectedDevice,
     startRecording,
     stopRecording,
-    playVideo,
+    playMedia,
     isRecording,
     recordingDuration,
-    playingVideoProgress,
+    playingMediaProgress,
     playbackAvailable,
-    pauseVideo,
+    pauseMedia,
     isPlaying,
     changeDevice,
     retake,
@@ -69,17 +69,17 @@ function AudioDemo() {
           <>
             {!isPlaying && (
               <>
-                <button onClick={playVideo}>Play audio</button>
+                <button onClick={playMedia}>Play audio</button>
                 <button onClick={() => retake()}>Retake</button>
                 <button onClick={download}>Download</button>
                 <button onClick={clearRecording}>Clear recording</button>
               </>
             )}
-            {isPlaying && <button onClick={pauseVideo}>Pause audio</button>}
+            {isPlaying && <button onClick={pauseMedia}>Pause audio</button>}
             <span>
-              Playback duration: {playingVideoProgress?.seconds} (
-              {playingVideoProgress?.defaultRepresentation}) (
-              {playingVideoProgress?.progressPercentage} %)
+              Playback duration: {playingMediaProgress?.seconds} (
+              {playingMediaProgress?.defaultRepresentation}) (
+              {playingMediaProgress?.progressPercentage} %)
             </span>
           </>
         )}

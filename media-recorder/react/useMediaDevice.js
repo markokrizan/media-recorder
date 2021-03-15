@@ -13,7 +13,7 @@ export const useMediaDevice = (mediaElement, maxRecordedFileSize = 100) => {
   const [selectedDevice, setSelectedDevice] = useSyncState();
   const [isRecording, setIsRecording] = useSyncState(false);
   const [recordingDuration, setRecordingDuration] = useSyncState(0);
-  const [playingVideoProgress, setPlayingVideoProgress] = useState(null);
+  const [playingMediaProgress, setPlayingMediaProgress] = useState(null);
   const [isPaused, setIsPaused] = useSyncState(false);
   const [isPlaying, setIsPlaying] = useSyncState(false);
   const [playbackAvailable, setPlaybackAvailable] = useSyncState(false);
@@ -39,10 +39,10 @@ export const useMediaDevice = (mediaElement, maxRecordedFileSize = 100) => {
     await setRecordingDuration(0);
   };
 
-  const onResetVideoData = async () => {
+  const onResetMediaData = async () => {
     await setIsPlaying(false);
     await setIsPaused(false);
-    await setPlayingVideoProgress(null);
+    await setPlayingMediaProgress(null);
   };
 
   const loadStream = async () => {
@@ -54,16 +54,16 @@ export const useMediaDevice = (mediaElement, maxRecordedFileSize = 100) => {
     await camDriver.current.loadStream();
   };
 
-  const showVideoFile = async (videoFile) => {
+  const showVideoFile = async (mediaFile) => {
     await setIsPreviewing(true);
 
     await setPlaybackAvailable(true);
 
-    await camDriver.current.showVideo(videoFile);
+    await camDriver.current.showMediaFile(mediaFile);
   };
 
-  const onPlayVideoFrame = async ({ progressPercentage, timeElapsed }) => {
-    setPlayingVideoProgress({
+  const onPlayMediaFrame = async ({ progressPercentage, timeElapsed }) => {
+    setPlayingMediaProgress({
       progressPercentage,
       timeElapsed,
       defaultRepresentation: getSecondsAsTimeString(timeElapsed),
@@ -71,7 +71,7 @@ export const useMediaDevice = (mediaElement, maxRecordedFileSize = 100) => {
   };
 
   const onPlaybackFinished = async ({ progressPercentage }) => {
-    setPlayingVideoProgress({
+    setPlayingMediaProgress({
       progressPercentage,
       timeElapsed: 0,
       defaultRepresentation: getSecondsAsTimeString(0),
@@ -109,8 +109,8 @@ export const useMediaDevice = (mediaElement, maxRecordedFileSize = 100) => {
         onRecordingError,
         onVideoRecordTick,
         onStartRecording,
-        onResetVideoData,
-        onPlayVideoFrame,
+        onResetMediaData,
+        onPlayMediaFrame,
         onPlaybackFinished,
         onDeviceChange,
         onDeviceLoad
@@ -135,20 +135,20 @@ export const useMediaDevice = (mediaElement, maxRecordedFileSize = 100) => {
     return camDriver.current.stopRecording();
   };
 
-  const playVideo = async () => {
-    camDriver.current.playVideo();
+  const playMedia = async () => {
+    camDriver.current.playMedia();
     await setIsPaused(false);
     await setIsPlaying(true);
   };
 
-  const pauseVideo = async () => {
-    camDriver.current.pauseVideo();
+  const pauseMedia = async () => {
+    camDriver.current.pauseMedia();
     await setIsPlaying(false);
     await setIsPaused(true);
   };
 
-  const getRecordedVideo = () => {
-    return camDriver.current.getRecordedVideo();
+  const getRecordedMedia = () => {
+    return camDriver.current.getRecordedMedia();
   };
 
   const changeDevice = async (deviceId) => {
@@ -181,15 +181,15 @@ export const useMediaDevice = (mediaElement, maxRecordedFileSize = 100) => {
     setSelectedDevice,
     startRecording,
     stopRecording,
-    playVideo,
+    playMedia,
     isRecording,
     recordingDuration,
-    playingVideoProgress,
+    playingMediaProgress,
     playbackAvailable,
-    pauseVideo,
+    pauseMedia,
     isPaused,
     isPlaying,
-    getRecordedVideo,
+    getRecordedMedia,
     changeDevice,
     retake,
     clearRecording,

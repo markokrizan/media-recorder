@@ -48,18 +48,18 @@ export class CustomMediaRecorder extends MediaRecorder {
 
     this.start();
 
-    this.videoTimeInterval = setInterval(() => {
+    this.mediaTimeInterval = setInterval(() => {
       this.currentRecordingTimeElapsed = this.currentRecordingTimeElapsed + 1;
 
       this.onMediaRecordTick(this.currentRecordingTimeElapsed);
     }, 1000);
   }
 
-  getVideo() {
+  getRecordedMedia() {
     return this.currentRecordedData;
   }
 
-  resetVideo() {
+  resetRecordedMedia() {
     this.currentRecordingTimeElapsed = 0;
     this.currentRecordedData = [];
   }
@@ -73,7 +73,7 @@ export class CustomMediaRecorder extends MediaRecorder {
 
   clear() {
     clearInterval(this.sizeCheckTimer);
-    clearInterval(this.videoTimeInterval);
+    clearInterval(this.mediaTimeInterval);
     this.ondataavailable = null;
   }
 }

@@ -16,12 +16,12 @@ function VideoDemo() {
     selectedDevice,
     startRecording,
     stopRecording,
-    playVideo,
+    playMedia,
     isRecording,
     recordingDuration,
-    playingVideoProgress,
+    playingMediaProgress,
     playbackAvailable,
-    pauseVideo,
+    pauseMedia,
     isPlaying,
     changeDevice,
     retake,
@@ -69,17 +69,17 @@ function VideoDemo() {
           <>
             {!isPlaying && (
               <>
-                <button onClick={playVideo}>Play video</button>
+                <button onClick={playMedia}>Play video</button>
                 <button onClick={() => retake()}>Retake</button>
                 <button onClick={download}>Download</button>
                 <button onClick={clearRecording}>Clear recording</button>
               </>
             )}
-            {isPlaying && <button onClick={pauseVideo}>Pause video</button>}
+            {isPlaying && <button onClick={pauseMedia}>Pause video</button>}
             <span>
-              Playback duration: {playingVideoProgress?.seconds} (
-              {playingVideoProgress?.defaultRepresentation}) (
-              {playingVideoProgress?.progressPercentage} %)
+              Playback duration: {playingMediaProgress?.seconds} (
+              {playingMediaProgress?.defaultRepresentation}) (
+              {playingMediaProgress?.progressPercentage} %)
             </span>
           </>
         )}
