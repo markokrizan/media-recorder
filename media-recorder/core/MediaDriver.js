@@ -5,6 +5,8 @@ import {
   generateRandomString,
 } from "./utils";
 import {
+  TAG_NAME_VIDEO,
+  TAG_NAME_AUDIO,
   DEFAULT_VIDEO_FORMAT,
   DEVICE_TYPE_WEB_CAM,
   DEVICE_TYPE_MICROPHONE,
@@ -13,10 +15,16 @@ import {
   ERROR_CODE_PERMISSION_DENIED,
   ERROR_CODE_DEVICE_NOT_FOUND,
   DEFAULT_VIDEO_EXTENSION,
+  DEFAULT_AUDIO_EXTENSION,
 } from "./consts";
 
 const _PERMISSION_ERROR = "Permission denied";
 const _DEVICE_NOT_FOUND_ERROR = "Requested device not found";
+
+const DEFAULT_EXTENSIONS = {
+  [TAG_NAME_VIDEO]: DEFAULT_VIDEO_EXTENSION,
+  [TAG_NAME_AUDIO]: DEFAULT_AUDIO_EXTENSION,
+};
 
 export class MediaDriver {
   constructor(
@@ -29,7 +37,8 @@ export class MediaDriver {
     onResetVideoData = () => {},
     onPlayVideoFrame = () => {},
     onPlaybackFinished = () => {},
-    onDeviceChange = () => {}
+    onDeviceChange = () => {},
+    onDeviceLoad = () => {}
   ) {
     if (!mediaElement) {
       throw new Error(
@@ -37,16 +46,12 @@ export class MediaDriver {
       );
     }
 
-    this.extension = DEFAULT_VIDEO_EXTENSION;
-
     this.mediaElement = mediaElement;
     this.stream = null;
     this.mediaRecorder = null;
     this.currentRecordedVideo = {};
     this.devices = [];
-
     this.maxMediaSize = maxMediaSize;
-
     this.onStop = onStop;
     this.onRecordingError = onRecordingError;
     this.onMediaRecordTick = onMediaRecordTick;
@@ -55,17 +60,31 @@ export class MediaDriver {
     this.onPlayVideoFrame = onPlayVideoFrame;
     this.onPlaybackFinished = onPlaybackFinished;
     this.onDeviceChange = onDeviceChange;
+    this.onDeviceLoad = onDeviceLoad;
 
-    navigator.mediaDevices.ondevicechange = this.handleDeviceChange.bind(this);
+    this.init();
   }
 
-  async showWebcamPreview(deviceId) {
+  init() {
+    navigator.mediaDevices.ondevicechange = this.handleDeviceChange.bind(this);
+    this.loadDevices();
+  }
+
+  async loadStream(deviceId) {
     try {
       this.clear();
 
-      this.stream = deviceId
-        ? await this.getVideoDeviceStream(deviceId)
-        : await this._getDefaultWebcam();
+      const elementType = this._getElementType();
+
+      if (elementType === TAG_NAME_VIDEO) {
+        this.stream = await this.getVideoDeviceStream(deviceId);
+      } else if (elementType === TAG_NAME_AUDIO) {
+        this.stream = await this.getAudioDeviceStream(deviceId);
+      } else {
+        throw new Error(
+          "Provided element is not a descendant of HTMLMediaElement"
+        );
+      }
 
       this.mediaElement.setAttribute("autoplay", true);
       this.mediaElement.srcObject = this.stream;
@@ -138,18 +157,26 @@ export class MediaDriver {
     this.stream?.getTracks?.().forEach((track) => track.stop());
   }
 
-  async loadDevices(deviceKind) {
+  async loadDevices() {
+    const elementType = this._getElementType();
+
+    if (elementType === TAG_NAME_VIDEO) {
+      this.devices = await this._loadDevices(DEVICE_TYPE_WEB_CAM);
+    } else if (elementType === TAG_NAME_AUDIO) {
+      this.devices = await this._loadDevices(DEVICE_TYPE_MICROPHONE);
+    } else {
+      throw new Error(
+        "Provided element is not a descendant of HTMLMediaElement"
+      );
+    }
+
+    this.onDeviceLoad && this.onDeviceLoad(this.devices);
+  }
+
+  async _loadDevices(deviceKind) {
     const devices = await navigator.mediaDevices.enumerateDevices();
 
     return devices.filter((device) => device.kind === deviceKind);
-  }
-
-  async loadWebcams() {
-    return await this.loadDevices(DEVICE_TYPE_WEB_CAM);
-  }
-
-  async loadMicrophones() {
-    return await this.loadDevices(DEVICE_TYPE_MICROPHONE);
   }
 
   getDevices() {
@@ -160,11 +187,8 @@ export class MediaDriver {
     this.devices = devices;
   }
 
-  async _getDefaultWebcam() {
-    return await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    });
+  _getElementType() {
+    return this.mediaElement.tagName;
   }
 
   async _getDeviceStream(constraint) {
@@ -172,16 +196,30 @@ export class MediaDriver {
   }
 
   async getVideoDeviceStream(deviceId) {
+    if (deviceId) {
+      return await this._getDeviceStream({
+        video: { deviceId },
+        audio: true,
+      });
+    }
+
     return await this._getDeviceStream({
-      video: { deviceId },
+      video: true,
       audio: true,
     });
   }
 
   async getAudioDeviceStream(deviceId) {
+    if (deviceId) {
+      return await this._getDeviceStream({
+        video: false,
+        audio: { deviceId },
+      });
+    }
+
     return await this._getDeviceStream({
       video: false,
-      audio: { deviceId },
+      audio: true,
     });
   }
 
@@ -276,30 +314,31 @@ export class MediaDriver {
     this.stopStream();
 
     await this.resetVideoData();
-    await this.showWebcamPreview(deviceId);
+    await this.loadStream(deviceId);
   }
 
   async retake(deviceId) {
     await this.resetVideoData();
-    await this.showWebcamPreview(deviceId);
+    await this.loadStream(deviceId);
     await this.startRecording();
   }
 
   async clearRecording() {
     await this.resetVideoData();
-    await this.showWebcamPreview();
+    await this.loadStream();
   }
 
   download() {
     const url = URL.createObjectURL(this.getRecordedVideo());
-    const donwloadLink = document.createElement("a");
-    const fileName = generateRandomString() + this.extension;
+    const downloadLink = document.createElement("a");
+    const fileName =
+      generateRandomString() + DEFAULT_EXTENSIONS[this._getElementType()];
 
-    document.body.appendChild(donwloadLink);
-    donwloadLink.style = "display: none";
-    donwloadLink.href = url;
-    donwloadLink.download = fileName;
-    donwloadLink.click();
+    document.body.appendChild(downloadLink);
+    downloadLink.style = "display: none";
+    downloadLink.href = url;
+    downloadLink.download = fileName;
+    downloadLink.click();
 
     window.URL.revokeObjectURL(url);
     donwloadLink.remove();

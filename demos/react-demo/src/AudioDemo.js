@@ -10,7 +10,7 @@ function AudioDemo() {
   }, []);
 
   const {
-    showWebcamPreview,
+    loadStream,
     isPreviewing,
     devices,
     selectedDevice,
@@ -37,7 +37,7 @@ function AudioDemo() {
       <div className="video-controls-container ">
         {!isPreviewing && (
           <>
-            <button onClick={showWebcamPreview}>Show webcam preview</button>
+            <button onClick={loadStream}>Load stream</button>
             Load video file:
             <input
               type="file"
@@ -69,13 +69,13 @@ function AudioDemo() {
           <>
             {!isPlaying && (
               <>
-                <button onClick={playVideo}>Play video</button>
+                <button onClick={playVideo}>Play audio</button>
                 <button onClick={() => retake()}>Retake</button>
                 <button onClick={download}>Download</button>
                 <button onClick={clearRecording}>Clear recording</button>
               </>
             )}
-            {isPlaying && <button onClick={pauseVideo}>Pause video</button>}
+            {isPlaying && <button onClick={pauseVideo}>Pause audio</button>}
             <span>
               Playback duration: {playingVideoProgress?.seconds} (
               {playingVideoProgress?.defaultRepresentation}) (

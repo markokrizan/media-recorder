@@ -1,7 +1,10 @@
+export const TAG_NAME_VIDEO = "VIDEO";
+export const TAG_NAME_AUDIO = "AUDIO";
 export const DEVICE_TYPE_WEB_CAM = "videoinput";
 export const DEVICE_TYPE_MICROPHONE = "audioinput";
 export const VIDEO_MAX_SIZE = 100;
 export const DEFAULT_VIDEO_FORMAT = "video/webm";
+export const DEFAULT_AUDIO_EXTENSION = ".mp3";
 export const DEFAULT_VIDEO_EXTENSION = ".webm";
 export const EVENT_ADD_DEVICE = "add_device";
 export const EVENT_REMOVE_DEVICE = "remove_device";

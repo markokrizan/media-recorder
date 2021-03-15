@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 import useSyncState from "./useSyncState";
 import { EVENT_REMOVE_DEVICE } from "../core/consts";
 import { MediaDriver } from "../core/MediaDriver";
 import { getSecondsAsTimeString, mapPluggedOutDevice } from "../core/utils";
 
-let camDriver = null;
+export const useMediaDevice = (mediaElement, maxRecordedFileSize = 100) => {
+  let camDriver = useRef(null);
 
-export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
   const [isPreviewing, setIsPreviewing] = useSyncState(false);
   const [devices, setDevices] = useState([]);
   const [selectedDevice, setSelectedDevice] = useSyncState();
@@ -45,13 +45,13 @@ export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
     await setPlayingVideoProgress(null);
   };
 
-  const showWebcamPreview = async () => {
+  const loadStream = async () => {
     await setIsPreviewing(true);
 
     await setIsPlaying(false);
     await setPlaybackAvailable(false);
 
-    await camDriver.showWebcamPreview();
+    await camDriver.current.loadStream();
   };
 
   const showVideoFile = async (videoFile) => {
@@ -59,7 +59,7 @@ export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
 
     await setPlaybackAvailable(true);
 
-    await camDriver.showVideo(videoFile);
+    await camDriver.current.showVideo(videoFile);
   };
 
   const onPlayVideoFrame = async ({ progressPercentage, timeElapsed }) => {
@@ -82,7 +82,7 @@ export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
   };
 
   const onDeviceChange = async ({ event, device }) => {
-    const newDevices = await camDriver.loadDevices();
+    const newDevices = await camDriver.current.loadDevices();
 
     if (event === EVENT_REMOVE_DEVICE) {
       return setDevices((previousDevices) =>
@@ -93,11 +93,18 @@ export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
     setDevices(newDevices);
   };
 
+  const onDeviceLoad = async (devices) => {
+    if (devices.length) {
+      await setDevices(devices);
+      await setSelectedDevice(devices[0].deviceId);
+    }
+  };
+
   useEffect(() => {
-    if (videoElement) {
-      camDriver = new MediaDriver(
-        videoElement,
-        maxVideoMessageSize,
+    if (mediaElement) {
+      camDriver.current = new MediaDriver(
+        mediaElement,
+        maxRecordedFileSize,
         onStop,
         onRecordingError,
         onVideoRecordTick,
@@ -105,29 +112,18 @@ export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
         onResetVideoData,
         onPlayVideoFrame,
         onPlaybackFinished,
-        onDeviceChange
+        onDeviceChange,
+        onDeviceLoad
       );
-
-      const initDevices = async () => {
-        const devices = await camDriver.loadWebcams();
-
-        if (devices.length) {
-          camDriver.setDevices(devices);
-          await setDevices(devices);
-          await setSelectedDevice(devices[0].deviceId);
-        }
-      };
-
-      initDevices();
     }
 
     return () => {
-      camDriver && camDriver.clear();
+      camDriver.current && camDriver.current.clear();
     };
-  }, [videoElement]);
+  }, [mediaElement]);
 
   const startRecording = async () => {
-    return camDriver.startRecording();
+    return camDriver.current.startRecording();
   };
 
   const stopRecording = async () => {
@@ -136,49 +132,49 @@ export const useMediaDevice = (videoElement, maxVideoMessageSize = 100) => {
     }
 
     await setIsRecording(false);
-    return camDriver.stopRecording();
+    return camDriver.current.stopRecording();
   };
 
   const playVideo = async () => {
-    camDriver.playVideo();
+    camDriver.current.playVideo();
     await setIsPaused(false);
     await setIsPlaying(true);
   };
 
   const pauseVideo = async () => {
-    camDriver.pauseVideo();
+    camDriver.current.pauseVideo();
     await setIsPlaying(false);
     await setIsPaused(true);
   };
 
   const getRecordedVideo = () => {
-    return camDriver.getRecordedVideo();
+    return camDriver.current.getRecordedVideo();
   };
 
   const changeDevice = async (deviceId) => {
     await setSelectedDevice(deviceId);
 
-    return await camDriver?.changeDevice?.(deviceId);
+    return await camDriver.current?.changeDevice?.(deviceId);
   };
 
   const retake = async (deviceId) => {
     await setPlaybackAvailable(false);
 
-    return await camDriver.retake(deviceId || selectedDevice);
+    return await camDriver.current.retake(deviceId || selectedDevice);
   };
 
   const clearRecording = async () => {
     await setPlaybackAvailable(false);
 
-    return await camDriver.clearRecording();
+    return await camDriver.current.clearRecording();
   };
 
   const download = () => {
-    return camDriver.download();
+    return camDriver.current.download();
   };
 
   return {
-    showWebcamPreview,
+    loadStream,
     isPreviewing,
     devices,
     selectedDevice,

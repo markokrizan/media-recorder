@@ -10,7 +10,7 @@ function VideoDemo() {
   }, []);
 
   const {
-    showWebcamPreview,
+    loadStream,
     isPreviewing,
     devices,
     selectedDevice,
@@ -37,7 +37,7 @@ function VideoDemo() {
       <div className="video-controls-container ">
         {!isPreviewing && (
           <>
-            <button onClick={showWebcamPreview}>Show webcam preview</button>
+            <button onClick={loadStream}>Load stream</button>
             Load video file:
             <input
               type="file"
