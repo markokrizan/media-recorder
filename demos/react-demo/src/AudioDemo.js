@@ -38,7 +38,7 @@ function AudioDemo() {
         {!isPreviewing && (
           <>
             <button onClick={loadStream}>Load stream</button>
-            Load video file:
+            Load audio file:
             <input
               type="file"
               onChange={(e) => showVideoFile(e.target.files[0])}
