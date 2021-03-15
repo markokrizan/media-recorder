@@ -302,6 +302,7 @@ export class MediaDriver {
     donwloadLink.click();
 
     window.URL.revokeObjectURL(url);
+    donwloadLink.remove();
   }
 
   clear() {
