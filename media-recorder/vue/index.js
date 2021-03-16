@@ -109,7 +109,7 @@ export default {
     _onDeviceLoad(devices) {
       if (devices.length) {
         this.devices = devices;
-        this.selectedDevice = devices[0];
+        this.setSelectedDevice(devices[0].deviceId);
       }
     },
 

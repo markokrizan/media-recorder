@@ -8,19 +8,23 @@
         Load video file:
         <input type="file" @change="(e) => showVideoFile(e.target.files[0])" />
       </div>
-      <div v-if="!isRecording && isPreviewing && !playbackAvailable">
+      <div v-if="!isRecording && isPreviewing && !isPlaybackAvailable">
         <select
           :value="selectedDevice.deviceId || null"
           @change="(e) => changeDevice(e.target.value)"
         >
-          {devices.map((device) => (
-          <option value="{device.deviceId}">{device.label}</option>
-          ))}
+          <option
+            :key="device.deviceId"
+            v-for="device in devices"
+            :value="device.deviceId"
+            >{{ device.label }}</option
+          >
         </select>
-        <button onClick="{startRecording}">Start recording</button>
+        <button @click="startRecording">Start recording</button>
       </div>
       <span v-if="isRecording">
-        Recording duration: {{ recordingDuration.seconds }} (
+        Recording duration:
+        {{ recordingDuration && recordingDuration.seconds }} (
         {{ recordingDuration.defaultRepresentation }})
       </span>
       <button v-if="isRecording" @click="stopRecording">Stop recording</button>
@@ -33,9 +37,13 @@
         </div>
         <button v-if="isPlaying" @click="pauseMedia">Pause video</button>
         <span>
-          Playback duration: {{ playingMediaProgress.seconds }} ({{
-            playingMediaProgress.defaultRepresentation
-          }}) ({{ playingMediaProgress.progressPercentage }} %)
+          Playback duration:
+          {{ playingMediaProgress && playingMediaProgress.seconds }} ({{
+            playingMediaProgress && playingMediaProgress.defaultRepresentation
+          }}) ({{
+            playingMediaProgress && playingMediaProgress.progressPercentage
+          }}
+          %)
         </span>
       </div>
     </div>
