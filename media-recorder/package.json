@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "yarn build-react",
-    "build-react": "webpack-cli build --config webpack.config.react.js --mode production"
+    "build": "yarn build-react && yarn build-vue",
+    "build-react": "webpack-cli build --config webpack.config.react.js --mode production",
+    "build-vue": "webpack-cli build --config webpack.config.vue.js --mode production"
   },
   "author": "",
   "license": "ISC",
