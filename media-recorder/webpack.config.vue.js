@@ -14,8 +14,8 @@ module.exports = {
   },
   entry: "./vue/index.js",
   output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "vue.js",
+    path: path.resolve(__dirname, "dist/vue"),
+    filename: "index.js",
     library: "mediaRecorderVue",
     libraryTarget: "commonjs2",
   },

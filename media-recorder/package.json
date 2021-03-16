@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "yarn build-react && yarn build-vue",
+    "build": "yarn build-react && yarn build-vue && yarn build-angular",
     "build-react": "webpack-cli build --config webpack.config.react.js --mode production",
-    "build-vue": "webpack-cli build --config webpack.config.vue.js --mode production"
+    "build-vue": "webpack-cli build --config webpack.config.vue.js --mode production",
+    "build-angular": "cd angular && yarn build-media-recorder --prod && cp -R dist/media-recorder ../dist/angular"
   },
   "author": "",
   "license": "ISC",
