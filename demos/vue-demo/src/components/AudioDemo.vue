@@ -56,6 +56,6 @@ import { mediaRecorderVue } from "media-recorder/dist/vue";
 
 export default {
   name: "AudioDemo",
-  mixins: [mediaRecorderVue.default("audio-element", 100)],
+  mixins: [mediaRecorderVue.mediaRecorderMixin("audio-element", 100)],
 };
 </script>
