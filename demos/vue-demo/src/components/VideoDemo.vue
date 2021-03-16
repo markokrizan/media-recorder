@@ -10,13 +10,14 @@
       </div>
       <div v-if="!isRecording && isPreviewing && !isPlaybackAvailable">
         <select
-          :value="selectedDevice.deviceId || null"
+          :value="selectedDevice || null"
           @change="(e) => changeDevice(e.target.value)"
         >
           <option
             :key="device.deviceId"
             v-for="device in devices"
             :value="device.deviceId"
+            :selected="device.deviceId === selectedDevice"
             >{{ device.label }}</option
           >
         </select>
@@ -55,6 +56,6 @@ import { mediaRecorderVue } from "media-recorder/dist/vue";
 
 export default {
   name: "VideoDemo",
-  mixins: [mediaRecorderVue.default],
+  mixins: [mediaRecorderVue.default("video-element", 100)],
 };
 </script>

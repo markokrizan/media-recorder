@@ -1,7 +1,7 @@
 <template>
   <div>
     <p>Audio demo</p>
-    <audio ref="video-element" :autoplay="true" class="media-element" />
+    <audio ref="audio-element" :autoplay="true" class="media-element" />
     <div className="video-controls-container ">
       <div v-if="!isPreviewing">
         <button @click="loadStream">Load stream</button>
@@ -10,13 +10,14 @@
       </div>
       <div v-if="!isRecording && isPreviewing && !isPlaybackAvailable">
         <select
-          :value="selectedDevice.deviceId || null"
+          :value="selectedDevice || null"
           @change="(e) => changeDevice(e.target.value)"
         >
           <option
             :key="device.deviceId"
             v-for="device in devices"
             :value="device.deviceId"
+            :selected="device.deviceId === selectedDevice"
             >{{ device.label }}</option
           >
         </select>
@@ -55,6 +56,6 @@ import { mediaRecorderVue } from "media-recorder/dist/vue";
 
 export default {
   name: "AudioDemo",
-  mixins: [mediaRecorderVue.default],
+  mixins: [mediaRecorderVue.default("audio-element", 100)],
 };
 </script>

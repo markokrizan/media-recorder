@@ -2,7 +2,7 @@ import { MediaDriverFactory } from "../core/MediaDriver";
 import { getSecondsAsTimeString, mapPluggedOutDevice } from "../core/utils";
 import { EVENT_REMOVE_DEVICE } from "../core/consts";
 
-export default {
+export default (mediaElementRefName, maxMediaSize) => ({
   data() {
     return {
       driver: null,
@@ -18,20 +18,12 @@ export default {
     };
   },
 
-  props: {
-    maxMediaSize: {
-      type: Number,
-      required: false,
-      default: 100,
-    },
-  },
-
   mounted() {
-    const videoElement = this.$refs["video-element"];
+    const mediaElement = this.$refs[mediaElementRefName];
 
     this.driver = MediaDriverFactory.create(
-      videoElement,
-      this.maxMediaSize,
+      mediaElement,
+      maxMediaSize,
       this._onStop,
       this._onRecordingError,
       this._onVideoRecordTick,
@@ -184,4 +176,4 @@ export default {
       this.driver.download();
     },
   },
-};
+});
