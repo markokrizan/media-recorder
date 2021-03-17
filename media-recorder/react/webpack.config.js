@@ -13,9 +13,9 @@ module.exports = {
       },
     ],
   },
-  entry: "./react/index.js",
+  entry: "./index.js",
   output: {
-    path: path.resolve(__dirname, "dist/react"),
+    path: path.resolve(__dirname, "../dist/react"),
     filename: "index.js",
     library: "mediaRecorderReact",
     libraryTarget: "commonjs2",

@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { MediaRecorderService } from 'media-recorder/angular/dist/media-recorder'; // TODO: Use media-recorder/dist/angular
 
 @Component({
   selector: 'app-root',
@@ -8,8 +7,4 @@ import { MediaRecorderService } from 'media-recorder/angular/dist/media-recorder
 })
 export class AppComponent {
   title = 'angular-demo';
-
-  constructor(private mediaRecorderService: MediaRecorderService) { 
-    mediaRecorderService.foo();
-  }
 }

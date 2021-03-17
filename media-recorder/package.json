@@ -5,15 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "yarn build-react && yarn build-vue && yarn build-angular",
-    "build-react": "webpack-cli build --config webpack.config.react.js --mode production",
-    "build-vue": "webpack-cli build --config webpack.config.vue.js --mode production",
-    "build-angular": "cd angular && yarn build-media-recorder --prod && cp -R dist/media-recorder ../dist/angular"
+    "build": "yarn build-react && yarn build-vue && yarn prepare-angular-build && yarn build-angular",
+    "build-core": "cd core && webpack-cli build --mode production",
+    "build-react": "cd react && webpack-cli build --mode production",
+    "build-vue": "cd vue && webpack-cli build --mode production",
+    "prepare-angular-build": "yarn build-core && cp dist/core/index.js angular/MediaDriver.js",
+    "build-angular": "cd angular && yarn build-media-recorder --prod && cp -R dist/media-recorder ../dist/angular",
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.13.10",
+    "@babel/plugin-transform-runtime": "^7.13.10",
     "@babel/preset-env": "^7.13.10",
     "@babel/preset-react": "^7.12.13",
     "@babel/plugin-proposal-class-properties": "^7.13.0",
