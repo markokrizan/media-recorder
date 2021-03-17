@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MediaRecorderService } from 'media-recorder/dist/angular';
+import { MediaRecorderService } from 'media-recorder/angular/dist/media-recorder'; // TODO: Use media-recorder/dist/angular
 
 @Component({
   selector: 'app-root',

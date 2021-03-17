@@ -12,6 +12,9 @@
       "media-recorder": [
         "dist/media-recorder/media-recorder",
         "dist/media-recorder"
+      ],
+      "@angular/*": [
+        "./node_modules/@angular/*"
       ]
     },
     "moduleResolution": "node",
