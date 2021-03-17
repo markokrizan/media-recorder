@@ -19,12 +19,4 @@ export class VideoPreviewComponent implements OnInit {
 
     this.mediaRecorderService.init(videoElement, 100);
   }
-
-  showVideoFile(e) {
-    this.mediaRecorderService.showVideoFile(e.target.files[0])
-  }
-
-  changeDevice(e) {
-    this.mediaRecorderService.changeDevice(e.target.value)
-  }
 }

@@ -10,7 +10,7 @@
     "build-react": "cd react && webpack-cli build --mode production",
     "build-vue": "cd vue && webpack-cli build --mode production",
     "prepare-angular-build": "yarn build-core && cp dist/core/index.js angular/MediaDriver.js",
-    "build-angular": "cd angular && yarn build-media-recorder --prod && cp -R dist/media-recorder ../dist/angular",
+    "build-angular": "cd angular && yarn build-media-recorder --prod && cp -R dist/media-recorder ../dist/angular"
   },
   "author": "",
   "license": "ISC",

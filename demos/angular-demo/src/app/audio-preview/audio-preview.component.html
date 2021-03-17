@@ -1,1 +1,51 @@
-<p>audio-preview works!</p>
+
+<div>
+  <p>Audio demo</p>
+  <audio #audioelement :autoplay="true" class="media-element"></audio>
+  <div class="video-controls-container ">
+    <div *ngIf="!mediaRecorderService.isPreviewing">
+      <button (click)="mediaRecorderService.loadStream()">Load stream</button>
+      Load audio file:
+      <input type="file" (change)="mediaRecorderService.showVideoFile($event.target.files[0])" />
+    </div>
+    <div *ngIf="!mediaRecorderService.isRecording && mediaRecorderService.isPreviewing && !mediaRecorderService.isPlaybackAvailable">
+      <select
+        :value="mediaRecorderService.selectedDevice || null"
+        (change)="mediaRecorderService.changeDevice($event.target.value)"
+      >
+        <option
+          :key="device.deviceId"
+          *ngFor="let device of mediaRecorderService.devices"
+          :value="device.deviceId"
+          :selected="device.deviceId === mediaRecorderService.selectedDevice"
+          >{{ device.label }}</option
+        >
+      </select>
+      <button (click)="mediaRecorderService.startRecording()">Start recording</button>
+    </div>
+    <span *ngIf="mediaRecorderService.isRecording">
+      Recording duration:
+      {{ mediaRecorderService.recordingDuration && mediaRecorderService.recordingDuration.seconds }} (
+      {{ mediaRecorderService.recordingDuration.defaultRepresentation }})
+    </span>
+    <button *ngIf="mediaRecorderService.isRecording" (click)="mediaRecorderService.stopRecording()">Stop recording</button>
+    <div *ngIf="mediaRecorderService.isPlaybackAvailable">
+      <div *ngIf="!mediaRecorderService.isPlaying">
+        <button (click)="mediaRecorderService.playMedia()">Play audio</button>
+        <button (click)="mediaRecorderService.retake()">Retake</button>
+        <button (click)="mediaRecorderService.download()">Download</button>
+        <button (click)="mediaRecorderService.clearRecording()">Clear recording</button>
+      </div>
+      <button *ngIf="mediaRecorderService.isPlaying" (click)="mediaRecorderService.pauseMedia()">Pause audio</button>
+      <span>
+        Playback duration:
+        {{ mediaRecorderService.playingMediaProgress && mediaRecorderService.playingMediaProgress.seconds }} ({{
+          mediaRecorderService.playingMediaProgress && mediaRecorderService.playingMediaProgress.defaultRepresentation
+        }}) ({{
+          mediaRecorderService.playingMediaProgress && mediaRecorderService.playingMediaProgress.progressPercentage
+        }}
+        %)
+      </span>
+    </div>
+  </div>
+</div>

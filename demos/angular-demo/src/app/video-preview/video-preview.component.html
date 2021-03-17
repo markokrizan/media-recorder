@@ -3,40 +3,40 @@
   <p>Video demo</p>
   <video #videoelement :autoplay="true" class="media-element"></video>
   <div class="video-controls-container ">
-    <div ng-if="!mediaRecorderService.isPreviewing">
+    <div *ngIf="!mediaRecorderService.isPreviewing">
       <button (click)="mediaRecorderService.loadStream()">Load stream</button>
       Load video file:
-      <input type="file" (change)="mediaRecorderService.showVideoFile" />
+      <input type="file" (change)="mediaRecorderService.showVideoFile($event.target.files[0])" />
     </div>
-    <div ng-if="!mediaRecorderService.isRecording && mediaRecorderService.isPreviewing && !mediaRecorderService.isPlaybackAvailable">
-      <!-- <select
+    <div *ngIf="!mediaRecorderService.isRecording && mediaRecorderService.isPreviewing && !mediaRecorderService.isPlaybackAvailable">
+      <select
         :value="mediaRecorderService.selectedDevice || null"
-        (change)="mediaRecorderService.changeDevice"
+        (change)="mediaRecorderService.changeDevice($event.target.value)"
       >
         <option
           :key="device.deviceId"
-          *ngFor="device in mediaRecorderService.devices"
+          *ngFor="let device of mediaRecorderService.devices"
           :value="device.deviceId"
           :selected="device.deviceId === mediaRecorderService.selectedDevice"
           >{{ device.label }}</option
         >
-      </select> -->
+      </select>
       <button (click)="mediaRecorderService.startRecording()">Start recording</button>
     </div>
-    <span ng-if="mediaRecorderService.isRecording">
+    <span *ngIf="mediaRecorderService.isRecording">
       Recording duration:
       {{ mediaRecorderService.recordingDuration && mediaRecorderService.recordingDuration.seconds }} (
       {{ mediaRecorderService.recordingDuration.defaultRepresentation }})
     </span>
-    <button ng-if="mediaRecorderService.isRecording()" (click)="mediaRecorderService.stopRecording()">Stop recording</button>
-    <div ng-if="mediaRecorderService.isPlaybackAvailable">
-      <div ng-if="!mediaRecorderService.isPlaying">
+    <button *ngIf="mediaRecorderService.isRecording" (click)="mediaRecorderService.stopRecording()">Stop recording</button>
+    <div *ngIf="mediaRecorderService.isPlaybackAvailable">
+      <div *ngIf="!mediaRecorderService.isPlaying">
         <button (click)="mediaRecorderService.playMedia()">Play video</button>
         <button (click)="mediaRecorderService.retake()">Retake</button>
         <button (click)="mediaRecorderService.download()">Download</button>
         <button (click)="mediaRecorderService.clearRecording()">Clear recording</button>
       </div>
-      <button ng-if="mediaRecorderService.isPlaying" (click)="mediaRecorderService.pauseMedia()">Pause video</button>
+      <button *ngIf="mediaRecorderService.isPlaying" (click)="mediaRecorderService.pauseMedia()">Pause video</button>
       <span>
         Playback duration:
         {{ mediaRecorderService.playingMediaProgress && mediaRecorderService.playingMediaProgress.seconds }} ({{
