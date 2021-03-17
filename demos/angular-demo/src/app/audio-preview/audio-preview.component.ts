@@ -4,7 +4,8 @@ import { MediaRecorderService } from 'media-recorder/angular/dist/media-recorder
 @Component({
   selector: 'app-audio-preview',
   templateUrl: './audio-preview.component.html',
-  styleUrls: ['./audio-preview.component.css']
+  styleUrls: ['./audio-preview.component.css'],
+  providers: [MediaRecorderService]
 })
 export class AudioPreviewComponent implements OnInit {
 
